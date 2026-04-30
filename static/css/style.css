@@ -215,42 +215,138 @@ a { color: inherit; text-decoration: none; }
 }
 .link-arrow:hover { text-decoration: underline; }
 
-/* ── FEATURE CARDS ── */
-.features { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+/* ── STATS BAR ── */
+.stats-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 24px 40px;
+  flex-wrap: wrap;
+}
 
-.features-grid {
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0 48px;
+  text-align: center;
+}
+
+.stat-value {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.stat-label {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.stat-divider {
+  width: 1px;
+  height: 40px;
+  background: var(--border);
+}
+
+/* ── PILLARS ── */
+.pillars-section { padding-top: 80px; }
+
+.pillars-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
+  gap: 20px;
 }
 
-.feature-card {
-  background: var(--bg3);
+.pillar-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 32px;
-  transition: border-color 0.2s;
+  padding: 36px 32px;
+  transition: border-color 0.2s, transform 0.2s;
+  cursor: pointer;
 }
-.feature-card:hover { border-color: var(--gold-dim); }
+.pillar-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-3px);
+}
 
-.feature-icon {
-  font-size: 1.4rem;
+.pillar-icon {
+  font-size: 1.2rem;
   color: var(--gold);
-  margin-bottom: 16px;
 }
 
-.feature-card h3 {
+.pillar-card h3 {
   font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.05rem;
+  font-size: 1.2rem;
   font-weight: 700;
-  margin-bottom: 10px;
 }
 
-.feature-card p {
+.pillar-card p {
   color: var(--text-dim);
   font-size: 0.9rem;
   line-height: 1.65;
+  flex: 1;
 }
+
+.pillar-cta {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--gold);
+  margin-top: 4px;
+}
+
+/* ── JOIN CTA ── */
+.cta-section {
+  padding: 100px 0;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+}
+
+.cta-inner {
+  max-width: 560px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 0 40px;
+}
+
+.cta-logo {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 0 16px rgba(204,34,34,0.2));
+}
+
+.cta-inner h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.cta-inner p {
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin-bottom: 8px;
+}
+
 
 /* ── TOP STUDENTS (homepage) ── */
 .top-students-grid {
