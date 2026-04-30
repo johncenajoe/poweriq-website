@@ -20,11 +20,6 @@
 <!-- LIVE STATS BAR -->
 <div class="stats-bar">
   <div class="stat-item">
-    <span class="stat-value" id="stat-members">—</span>
-    <span class="stat-label">Registered Members</span>
-  </div>
-  <div class="stat-divider"></div>
-  <div class="stat-item">
     <span class="stat-value" id="stat-top">—</span>
     <span class="stat-label">Top Credit Holder</span>
   </div>
@@ -119,7 +114,6 @@
     .then(students => {
       // Stats bar
       const total = students.reduce((a, s) => a + Math.max(s.credits, 0), 0);
-      document.getElementById('stat-members').textContent = students.length;
       document.getElementById('stat-top').textContent = students[0]?.username || '—';
       document.getElementById('stat-credits').textContent = total.toLocaleString();
 
