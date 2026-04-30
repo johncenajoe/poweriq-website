@@ -651,6 +651,57 @@ th.col-credits { text-align: right; }
   animation: shimmer 1.4s infinite;
 }
 
+/* ── BOOK CTA ── */
+.book-cta-section {
+  padding: 80px 0;
+  border-top: 1px solid var(--border);
+}
+
+.book-cta-inner {
+  display: flex;
+  align-items: center;
+  gap: 60px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 48px;
+}
+
+.book-cover {
+  width: 180px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 30px rgba(204,34,34,0.1);
+}
+
+.book-cta-text {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.book-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.book-cta-text h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.book-cta-text p {
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  max-width: 480px;
+}
+
 /* ── FOOTER ── */
 .footer {
   padding: 24px 40px;
@@ -692,4 +743,5 @@ th.col-credits { text-align: right; }
   .container { padding: 0 20px; }
   .controls { flex-direction: column; }
   .section { padding: 60px 0; }
+  .book-cta-inner { flex-direction: column; padding: 32px 24px; text-align: center; align-items: center; }
 }
