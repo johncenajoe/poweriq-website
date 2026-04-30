@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Power IQ — Home{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-inner">
+    <img src="/static/img/logo.png" alt="Power IQ" class="hero-logo" />
+    <p class="hero-label">Power IQ Agency &nbsp;·&nbsp; Season 01</p>
+    <h1 class="hero-title">POWER IQ</h1>
+    <p class="hero-sub">A live intelligence system where knowledge is tracked, classes are earned, and credits define your standing.</p>
+    <div class="hero-actions">
+      <a href="/credits" class="btn btn-primary">View Leaderboard</a>
+      <a href="/library" class="btn btn-ghost">Browse Library</a>
+    </div>
+  </div>
+  <div class="hero-glow"></div>
+</section>
+
+<section class="section features">
+  <div class="container">
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">&#9733;</div>
+        <h3>Credit System</h3>
+        <p>Every action you take in the server earns or costs credits. Your balance reflects your discipline and contribution.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#9670;</div>
+        <h3>Class Rankings</h3>
+        <p>From D to A, your class is a reflection of your performance. Classes are assigned by admins — earn yours.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#9632;</div>
+        <h3>Knowledge Library</h3>
+        <p>Curated lessons on psychology, strategy, and critical thinking — formatted as articles for deep study.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section preview-section">
+  <div class="container">
+    <div class="section-header">
+      <h2>Top Ranked</h2>
+      <a href="/credits" class="link-arrow">See full list &rarr;</a>
+    </div>
+    <div id="top-students" class="top-students-grid">
+      <div class="skeleton-row"></div>
+      <div class="skeleton-row"></div>
+      <div class="skeleton-row"></div>
+    </div>
+  </div>
+</section>
+<section class="section yt-section">
+  <div class="container">
+    <div class="section-header">
+      <h2>Latest Videos</h2>
+      <a href="https://www.youtube.com/@THEPOWERIQ" target="_blank" class="link-arrow">View Channel &rarr;</a>
+    </div>
+    <div id="yt-feed" class="yt-grid">
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/main.js"></script>
+<script>
+  fetch('/api/youtube')
+    .then(r => r.json())
+    .then(videos => {
+      document.getElementById('yt-feed').innerHTML = videos.map(v => `
+        <a href="${v.url}" target="_blank" class="yt-card">
+          <div class="yt-thumb-wrap">
+            <img src="${v.thumbnail}" alt="${v.title}" class="yt-thumb" loading="lazy" />
+            <div class="yt-play">&#9654;</div>
+          </div>
+          <div class="yt-info">
+            <p class="yt-title">${v.title}</p>
+          </div>
+        </a>
+      `).join('');
+    });
+
+  fetch('/api/students')
+    .then(r => r.json())
+    .then(students => {
+      const top = students.slice(0, 3);
+      const container = document.getElementById('top-students');
+      container.innerHTML = top.map((s, i) => `
+        <div class="top-student-card rank-${i + 1}">
+          <span class="rank-badge">#${i + 1}</span>
+          <span class="student-name">${s.username}</span>
+          <span class="student-class class-${s.class.replace(/[^a-zA-Z0-9]/g, '')}">${s.class}</span>
+          <span class="student-credits">${s.credits} <small>credits</small></span>
+        </div>
+      `).join('');
+    });
+</script>
+{% endblock %}

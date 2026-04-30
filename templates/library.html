@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Power IQ — Library{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <h1>Library</h1>
+    <p>Curated lessons on psychology, strategy, and critical thinking.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+
+    <div class="library-controls">
+      <input type="text" id="lib-search" placeholder="Search lessons..." class="search-input" />
+      <div class="tag-filters" id="tag-filters">
+        <button class="tag-btn active" data-tag="">All</button>
+        <button class="tag-btn" data-tag="Psychology">Psychology</button>
+        <button class="tag-btn" data-tag="Strategy">Strategy</button>
+        <button class="tag-btn" data-tag="Debate">Debate</button>
+        <button class="tag-btn" data-tag="Philosophy">Philosophy</button>
+      </div>
+    </div>
+
+    <div class="library-empty">
+      <div class="empty-icon">&#9651;</div>
+      <h3>Articles coming soon</h3>
+      <p>Lessons are being written and will appear here. Check back shortly.</p>
+    </div>
+
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.querySelectorAll('.tag-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+</script>
+{% endblock %}

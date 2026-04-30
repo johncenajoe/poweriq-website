@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}Power IQ — Credits{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <h1>Credit Board</h1>
+    <p>Live standings for all registered members. Updated every minute.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+
+    <div class="controls">
+      <div class="search-wrap">
+        <input type="text" id="search" placeholder="Search member..." class="search-input" />
+      </div>
+      <div class="filter-wrap">
+        <select id="class-filter" class="filter-select">
+          <option value="">All Classes</option>
+          <option value="A">A</option>
+          <option value="B+">B+</option>
+          <option value="B">B</option>
+          <option value="B-">B-</option>
+          <option value="C+">C+</option>
+          <option value="C">C</option>
+          <option value="C-">C-</option>
+          <option value="D+">D+</option>
+          <option value="D">D</option>
+          <option value="N/A">N/A</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="credits-table-wrap">
+      <table class="credits-table" id="credits-table">
+        <thead>
+          <tr>
+            <th class="col-rank">Rank</th>
+            <th class="col-name">Member</th>
+            <th class="col-class">Class</th>
+            <th class="col-credits sortable active" data-col="credits">Credits <span class="sort-icon">&#8595;</span></th>
+          </tr>
+        </thead>
+        <tbody id="credits-body">
+          <tr class="loading-row"><td colspan="4">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="no-results" class="no-results hidden">No members match your search.</div>
+
+    <p class="last-updated">Last updated: <span id="last-updated-time">—</span></p>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/main.js"></script>
+<script>
+  let allStudents = [];
+
+  function classColor(cls) {
+    if (cls.startsWith('A')) return 'gold';
+    if (cls.startsWith('B')) return 'silver';
+    if (cls.startsWith('C')) return 'bronze';
+    if (cls.startsWith('D')) return 'low';
+    return 'na';
+  }
+
+  function renderTable(students) {
+    const tbody = document.getElementById('credits-body');
+    const noResults = document.getElementById('no-results');
+    if (!students.length) {
+      tbody.innerHTML = '';
+      noResults.classList.remove('hidden');
+      return;
+    }
+    noResults.classList.add('hidden');
+    tbody.innerHTML = students.map((s, i) => {
+      const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`;
+      const creditClass = s.credits < 0 ? 'negative' : s.credits === 0 ? 'zero' : 'positive';
+      return `
+        <tr>
+          <td class="col-rank">${medal}</td>
+          <td class="col-name">${s.username}</td>
+          <td class="col-class"><span class="class-badge class-${classColor(s.class)}">${s.class}</span></td>
+          <td class="col-credits credit-${creditClass}">${s.credits >= 0 ? '+' : ''}${s.credits}</td>
+        </tr>`;
+    }).join('');
+  }
+
+  function applyFilters() {
+    const q = document.getElementById('search').value.toLowerCase();
+    const cls = document.getElementById('class-filter').value;
+    let filtered = allStudents;
+    if (q) filtered = filtered.filter(s => s.username.toLowerCase().includes(q));
+    if (cls) filtered = filtered.filter(s => s.class === cls);
+    renderTable(filtered);
+  }
+
+  fetch('/api/students')
+    .then(r => r.json())
+    .then(data => {
+      allStudents = data;
+      renderTable(data);
+      document.getElementById('last-updated-time').textContent = new Date().toLocaleTimeString();
+    });
+
+  document.getElementById('search').addEventListener('input', applyFilters);
+  document.getElementById('class-filter').addEventListener('change', applyFilters);
+
+  // Auto-refresh every 60s
+  setInterval(() => {
+    fetch('/api/students')
+      .then(r => r.json())
+      .then(data => {
+        allStudents = data;
+        applyFilters();
+        document.getElementById('last-updated-time').textContent = new Date().toLocaleTimeString();
+      });
+  }, 60000);
+</script>
+{% endblock %}
