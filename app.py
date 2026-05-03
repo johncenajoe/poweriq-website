@@ -14,8 +14,9 @@ SHEET_ID  = "1SXXwbx9x5OIY0wQrlg2KrNexhqCAoDlKJnHx6EEv1S0"
 CACHE_TTL = 60
 YT_TTL    = 600
 
-_cache    = {"data": None, "ts": 0}
-_yt_cache = {"data": None, "ts": 0}
+_cache      = {"data": None, "ts": 0}
+_yt_cache   = {"data": None, "ts": 0}
+_jobs_cache = {"data": None, "ts": 0}
 
 SCOPES = [
     "https://spreadsheets.google.com/feeds",
@@ -82,9 +83,15 @@ def get_students():
     ws = gc.open_by_key(SHEET_ID).worksheet("Credits")
     rows = ws.get_all_values()
 
+    HIDDEN_USERNAMES = {"machiavellian", "xqrmn"}
+    HIDDEN_IDS = {"1496246092965347358", "295295355883487235"}
+
     students = []
     for row in rows[4:]:
         if len(row) >= 5 and row[0].strip().isdigit():
+            discord_id = str(row[2]).strip().split(".")[0]
+            if row[1].lower() in HIDDEN_USERNAMES or discord_id in HIDDEN_IDS:
+                continue
             try:
                 credits = int(row[4]) if row[4].strip() else 0
             except ValueError:
@@ -95,13 +102,46 @@ def get_students():
                 "class":    row[3] if len(row) > 3 else "N/A",
                 "credits":  credits,
             })
-
-    BANKERS = {"machiavellian", "xqrmn"}
-    students = [s for s in students if s["username"].lower() not in BANKERS]
     students.sort(key=lambda x: x["credits"], reverse=True)
     _cache["data"] = students
     _cache["ts"] = now
     return students
+
+
+def get_jobs():
+    now = time.time()
+    if _jobs_cache["data"] is not None and now - _jobs_cache["ts"] < CACHE_TTL:
+        return _jobs_cache["data"]
+
+    try:
+        gc = get_gspread_client()
+        ws = gc.open_by_key(SHEET_ID).worksheet("Jobs")
+        rows = ws.get_all_values()
+    except Exception:
+        return _jobs_cache["data"] or []
+
+    jobs = []
+    for row in rows[1:]:  # skip header
+        if len(row) >= 9 and row[8] in ("active", "completed"):
+            try:
+                reward = int(row[5]) if row[5].strip() else 0
+            except ValueError:
+                reward = 0
+            jobs.append({
+                "id":      row[0],
+                "poster":  row[1],
+                "title":   row[3],
+                "desc":    row[4],
+                "reward":  reward,
+                "posted":  row[6],
+                "expires": row[7],
+                "status":  row[8],
+                "claimer": row[9] if len(row) > 9 else "",
+            })
+
+    _jobs_cache["data"] = jobs
+    _jobs_cache["ts"] = now
+    return jobs
 
 
 @app.route("/")
@@ -127,6 +167,16 @@ def api_students():
 @app.route("/api/youtube")
 def api_youtube():
     return jsonify(get_youtube_videos())
+
+
+@app.route("/jobs")
+def jobs_page():
+    return render_template("jobs.html")
+
+
+@app.route("/api/jobs")
+def api_jobs():
+    return jsonify(get_jobs())
 
 
 if __name__ == "__main__":

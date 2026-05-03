@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Power IQ — Job Board{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <h1>Job Board</h1>
+    <p>Post tasks, find work, earn credits. Use <code style="background:var(--bg3);padding:2px 7px;border-radius:4px;font-size:0.85em;">/postjob</code> in Discord to list a job — approved listings appear here.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+
+    <div class="controls" style="margin-bottom:28px;">
+      <div class="search-wrap">
+        <input type="text" id="search" placeholder="Search jobs..." class="search-input" />
+      </div>
+      <div class="filter-wrap">
+        <select id="status-filter" class="filter-select">
+          <option value="active">Active</option>
+          <option value="completed">Completed</option>
+          <option value="">All</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="jobs-grid" class="jobs-grid">
+      <div class="skeleton-card" style="height:200px;"></div>
+      <div class="skeleton-card" style="height:200px;"></div>
+      <div class="skeleton-card" style="height:200px;"></div>
+    </div>
+
+    <div id="no-results" class="jobs-empty hidden">
+      <div class="empty-icon">📋</div>
+      <h3>No jobs found</h3>
+      <p>Try a different filter, or post one in Discord with <strong>/postjob</strong>.</p>
+    </div>
+
+    <p class="last-updated">Last updated: <span id="last-updated-time">—</span></p>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  let allJobs = [];
+
+  function statusBadge(status) {
+    if (status === 'active')    return '<span class="status-badge status-active">Active</span>';
+    if (status === 'completed') return '<span class="status-badge status-completed">Completed</span>';
+    return `<span class="status-badge">${status}</span>`;
+  }
+
+  function renderJobs(jobs) {
+    const grid     = document.getElementById('jobs-grid');
+    const noResult = document.getElementById('no-results');
+    if (!jobs.length) {
+      grid.innerHTML = '';
+      noResult.classList.remove('hidden');
+      return;
+    }
+    noResult.classList.add('hidden');
+    grid.innerHTML = jobs.map(j => `
+      <div class="job-card${j.status === 'completed' ? ' status-completed' : ''}">
+        <div class="job-card-header">
+          <span class="job-id">#${j.id}</span>
+          <span style="display:flex;align-items:center;gap:8px;">
+            ${statusBadge(j.status)}
+            <span class="job-reward">${j.reward} cr</span>
+          </span>
+        </div>
+        <div class="job-title">${escHtml(j.title)}</div>
+        <div class="job-desc">${escHtml(j.desc)}</div>
+        <div class="job-meta">
+          <span>👤 ${escHtml(j.poster)}</span>
+          <span>📅 Expires ${j.expires}</span>
+          <span>${j.claimer ? '🔒 ' + escHtml(j.claimer) : '✅ Open'}</span>
+        </div>
+      </div>`).join('');
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function applyFilters() {
+    const q      = document.getElementById('search').value.toLowerCase();
+    const status = document.getElementById('status-filter').value;
+    let filtered = allJobs;
+    if (status)  filtered = filtered.filter(j => j.status === status);
+    if (q)       filtered = filtered.filter(j =>
+      j.title.toLowerCase().includes(q) ||
+      j.desc.toLowerCase().includes(q)  ||
+      j.poster.toLowerCase().includes(q)
+    );
+    renderJobs(filtered);
+  }
+
+  function load() {
+    fetch('/api/jobs')
+      .then(r => r.json())
+      .then(data => {
+        allJobs = data;
+        applyFilters();
+        document.getElementById('last-updated-time').textContent = new Date().toLocaleTimeString();
+      });
+  }
+
+  document.getElementById('search').addEventListener('input', applyFilters);
+  document.getElementById('status-filter').addEventListener('change', applyFilters);
+
+  load();
+  setInterval(load, 60000);
+</script>
+{% endblock %}

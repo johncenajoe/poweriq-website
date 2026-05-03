@@ -735,6 +735,102 @@ th.col-credits { text-align: right; }
   background: rgba(100,110,130,0.1); color: #4a5268; border: 1px solid #1e2330;
 }
 
+/* ── JOBS PAGE ── */
+.jobs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.job-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.job-card:hover { border-color: var(--gold-dim); transform: translateY(-2px); }
+.job-card.status-completed { opacity: 0.6; }
+
+.job-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.job-id {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.job-reward {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.job-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.job-desc {
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  line-height: 1.65;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
+
+.job-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  margin-top: auto;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.status-active    { background: rgba(76,175,130,0.12); color: #4caf82; border: 1px solid rgba(76,175,130,0.3); }
+.status-completed { background: rgba(100,110,130,0.1); color: var(--text-muted); border: 1px solid var(--border); }
+
+.jobs-empty {
+  text-align: center;
+  padding: 100px 40px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+}
+.jobs-empty h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--text-dim);
+}
+.jobs-empty p { color: var(--text-muted); font-size: 0.9rem; }
+
 /* ── RESPONSIVE ── */
 @media (max-width: 640px) {
   .nav { padding: 0 20px; }
