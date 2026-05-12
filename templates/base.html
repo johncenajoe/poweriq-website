@@ -53,13 +53,16 @@
       <img src="/static/img/logo.png" alt="Power IQ" class="nav-logo-img" />
       <span class="logo-piq">POWER IQ</span>
     </a>
-    <ul class="nav-links">
+    <ul class="nav-links" id="navLinks">
       <li><a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">Home</a></li>
       <li><a href="/credits" class="nav-link {% if request.path == '/credits' %}active{% endif %}">Credits</a></li>
       <li><a href="/library" class="nav-link {% if request.path == '/library' %}active{% endif %}">Library</a></li>
       <li><a href="/jobs" class="nav-link {% if request.path == '/jobs' %}active{% endif %}">Jobs</a></li>
       <li><a href="/membership" class="nav-link {% if request.path == '/membership' %}active{% endif %}">Membership</a></li>
     </ul>
+    <button class="nav-hamburger" id="navHamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
 
   <main>
