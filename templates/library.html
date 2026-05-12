@@ -1,5 +1,8 @@
 {% extends "base.html" %}
-{% block title %}Power IQ — Library{% endblock %}
+{% block title %}Power IQ — Library: Psychology, Strategy & Critical Thinking{% endblock %}
+{% block meta_description %}<meta name="description" content="Browse the Power IQ library — curated in-depth lessons on psychology, strategy, debate, and critical thinking written for competitive intelligence development." />{% endblock %}
+{% block og_description %}<meta property="og:description" content="Browse the Power IQ library — curated in-depth lessons on psychology, strategy, debate, and critical thinking." />{% endblock %}
+{% block twitter_description %}<meta name="twitter:description" content="Browse the Power IQ library — curated in-depth lessons on psychology, strategy, debate, and critical thinking." />{% endblock %}
 
 {% block content %}
 <section class="page-header">
@@ -13,7 +16,7 @@
   <div class="container">
 
     <div class="library-controls">
-      <input type="text" id="lib-search" placeholder="Search lessons..." class="search-input" />
+      <input type="text" id="lib-search" placeholder="Search articles..." class="search-input" />
       <div class="tag-filters" id="tag-filters">
         <button class="tag-btn active" data-tag="">All</button>
         <button class="tag-btn" data-tag="Psychology">Psychology</button>
@@ -23,11 +26,35 @@
       </div>
     </div>
 
+    {% if articles %}
+    <div class="articles-grid" id="articles-grid">
+      {% for art in articles %}
+      <a href="/library/{{ art.id }}" class="article-card" data-tags="{{ art.tags | join(',') }}">
+        <div class="article-card-top">
+          <span class="article-category">{{ art.category }}</span>
+        </div>
+        <h2 class="article-title">{{ art.title }}</h2>
+        <p class="article-excerpt">{{ art.excerpt }}</p>
+        <div class="article-meta">
+          <span class="article-author">{{ art.author }}</span>
+          <span class="article-date">{{ art.date }}</span>
+        </div>
+        <span class="article-read">Read article &rarr;</span>
+      </a>
+      {% endfor %}
+    </div>
+    <div id="no-articles" class="library-empty hidden">
+      <div class="empty-icon">&#9651;</div>
+      <h3>No articles match</h3>
+      <p>Try a different tag or search term.</p>
+    </div>
+    {% else %}
     <div class="library-empty">
       <div class="empty-icon">&#9651;</div>
       <h3>Articles coming soon</h3>
       <p>Lessons are being written and will appear here. Check back shortly.</p>
     </div>
+    {% endif %}
 
   </div>
 </section>
@@ -35,10 +62,31 @@
 
 {% block scripts %}
 <script>
+  const cards = document.querySelectorAll('.article-card');
+  const noArticles = document.getElementById('no-articles');
+
+  function filterArticles() {
+    const q = document.getElementById('lib-search').value.toLowerCase();
+    const activeTag = document.querySelector('.tag-btn.active').dataset.tag;
+    let visible = 0;
+    cards.forEach(card => {
+      const title = card.querySelector('.article-title').textContent.toLowerCase();
+      const excerpt = card.querySelector('.article-excerpt').textContent.toLowerCase();
+      const tags = card.dataset.tags;
+      const matchesTag = !activeTag || tags.includes(activeTag);
+      const matchesSearch = !q || title.includes(q) || excerpt.includes(q);
+      card.style.display = (matchesTag && matchesSearch) ? '' : 'none';
+      if (matchesTag && matchesSearch) visible++;
+    });
+    if (noArticles) noArticles.classList.toggle('hidden', visible > 0);
+  }
+
+  document.getElementById('lib-search').addEventListener('input', filterArticles);
   document.querySelectorAll('.tag-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      filterArticles();
     });
   });
 </script>

@@ -4,6 +4,43 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}Power IQ{% endblock %}</title>
+
+  {% block meta_description %}<meta name="description" content="Power IQ is a competitive intelligence community where knowledge is measured, classes are assigned, and the most disciplined minds rise to the top." />{% endblock %}
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="{{ request.url }}" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Power IQ" />
+  <meta property="og:title" content="{{ self.title() }}" />
+  {% block og_description %}<meta property="og:description" content="Power IQ is a competitive intelligence community where knowledge is measured, classes are assigned, and the most disciplined minds rise to the top." />{% endblock %}
+  <meta property="og:url" content="{{ request.url }}" />
+  <meta property="og:image" content="{{ request.url_root }}static/img/logo.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="{{ self.title() }}" />
+  {% block twitter_description %}<meta name="twitter:description" content="Power IQ is a competitive intelligence community where knowledge is measured, classes are assigned, and the most disciplined minds rise to the top." />{% endblock %}
+  <meta name="twitter:image" content="{{ request.url_root }}static/img/logo.png" />
+
+  <!-- Structured Data -->
+  {% block structured_data %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Power IQ",
+    "url": "{{ request.url_root }}",
+    "logo": "{{ request.url_root }}static/img/logo.png",
+    "description": "A competitive intelligence community where knowledge is measured, classes are assigned, and the most disciplined minds rise to the top.",
+    "sameAs": [
+      "https://www.youtube.com/@THEPOWERIQ",
+      "https://discord.gg/EXkpRbrgMD"
+    ]
+  }
+  </script>
+  {% endblock %}
+
   <link rel="icon" type="image/png" href="/static/img/logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{{ article.title }} — Power IQ Library{% endblock %}
+{% block meta_description %}<meta name="description" content="{{ article.excerpt }}" />{% endblock %}
+{% block og_description %}<meta property="og:description" content="{{ article.excerpt }}" />{% endblock %}
+{% block twitter_description %}<meta name="twitter:description" content="{{ article.excerpt }}" />{% endblock %}
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "{{ article.title }}",
+  "description": "{{ article.excerpt }}",
+  "author": {
+    "@type": "Person",
+    "name": "{{ article.author }}"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Power IQ",
+    "logo": "{{ request.url_root }}static/img/logo.png"
+  },
+  "datePublished": "{{ article.date }}",
+  "url": "{{ request.url }}"
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<article class="article-page">
+
+  <div class="article-hero">
+    <div class="container">
+      <div class="article-hero-inner">
+        <a href="/library" class="article-back">&larr; Back to Library</a>
+        <span class="article-category">{{ article.category }}</span>
+        <h1 class="article-page-title">{{ article.title }}</h1>
+        <div class="article-byline">
+          <span class="article-author-name">{{ article.author }}</span>
+          <span class="article-byline-divider">&mdash;</span>
+          <span class="article-page-date">{{ article.date }}</span>
+        </div>
+        <p class="article-page-excerpt">{{ article.excerpt }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="article-body-wrap">
+    <div class="container">
+      <div class="article-body">
+        {{ article.content | safe }}
+      </div>
+    </div>
+  </div>
+
+  <div class="article-footer-nav">
+    <div class="container">
+      <a href="/library" class="btn btn-ghost">&larr; Back to Library</a>
+    </div>
+  </div>
+
+</article>
+{% endblock %}

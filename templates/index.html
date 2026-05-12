@@ -1,5 +1,38 @@
 {% extends "base.html" %}
-{% block title %}Power IQ — Home{% endblock %}
+{% block title %}Power IQ — Competitive Intelligence Community{% endblock %}
+{% block meta_description %}<meta name="description" content="Power IQ is a competitive intelligence community where members earn credits, get ranked by class, and study psychology, strategy, and critical thinking. Join the Discord and begin your development." />{% endblock %}
+{% block og_description %}<meta property="og:description" content="Power IQ is a competitive intelligence community where members earn credits, get ranked by class, and study psychology, strategy, and critical thinking." />{% endblock %}
+{% block twitter_description %}<meta name="twitter:description" content="Power IQ is a competitive intelligence community where members earn credits, get ranked by class, and study psychology, strategy, and critical thinking." />{% endblock %}
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "name": "Power IQ",
+      "url": "{{ request.url_root }}",
+      "description": "A competitive intelligence community where knowledge is measured, classes are assigned, and the most disciplined minds rise to the top.",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "{{ request.url_root }}credits?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "Organization",
+      "name": "Power IQ",
+      "url": "{{ request.url_root }}",
+      "logo": "{{ request.url_root }}static/img/logo.png",
+      "sameAs": [
+        "https://www.youtube.com/@THEPOWERIQ",
+        "https://discord.gg/EXkpRbrgMD"
+      ]
+    }
+  ]
+}
+</script>
+{% endblock %}
 
 {% block content %}
 
@@ -72,6 +105,64 @@
       <div class="skeleton-row"></div>
       <div class="skeleton-row"></div>
       <div class="skeleton-row"></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section pricing-section">
+  <div class="container">
+    <div class="section-header">
+      <h2>Get Access</h2>
+    </div>
+    <p class="pricing-sub">Structured discipline membership for ambitious students who want to think strategically and execute consistently.</p>
+    <div class="pricing-grid">
+
+      <div class="pricing-card">
+        <div class="pricing-tier-label">Initiate</div>
+        <div class="pricing-price">$20<span>/mo</span></div>
+        <ul class="pricing-features">
+          <li>2 live group strategy calls/month <em>(replays included)</em></li>
+          <li>Weekly planning &amp; review templates</li>
+          <li>Monthly discipline challenge</li>
+          <li>Community Access</li>
+        </ul>
+        <a href="https://meddevv.gumroad.com/l/hwpme" target="_blank" class="btn btn-ghost pricing-btn">Get Access &rarr;</a>
+      </div>
+
+      <div class="pricing-card pricing-card-featured">
+        <div class="pricing-badge">Most Popular</div>
+        <div class="pricing-tier-label">Vanguard</div>
+        <div class="pricing-price">$25<span>/mo</span></div>
+        <ul class="pricing-features">
+          <li>Everything in Initiate +</li>
+          <li><strong>1 on 1 Coaching</strong></li>
+          <li>Full access to the 30-Day Zero Protocol system</li>
+          <li>Monthly personal goal audit</li>
+          <li>Direct feedback on study, routine &amp; execution</li>
+          <li>Leadership role inside Community</li>
+          <li>Morning routine + deep work study file</li>
+        </ul>
+        <a href="https://meddevv.gumroad.com/l/hwpme" target="_blank" class="btn btn-primary pricing-btn">Get Access &rarr;</a>
+      </div>
+
+      <div class="pricing-card">
+        <div class="pricing-tier-label">Council</div>
+        <div class="pricing-price">$50<span>/mo</span></div>
+        <ul class="pricing-features">
+          <li>Everything in Vanguard +</li>
+          <li>Priority DM access</li>
+          <li>Weekly accountability reviews</li>
+          <li>Custom routine + execution systems</li>
+          <li>Personalized deep work protocol</li>
+          <li>Emergency reset support</li>
+          <li>Private elite mastermind channel</li>
+          <li>Advanced discipline training</li>
+          <li>First access to future drops</li>
+        </ul>
+        <a href="https://meddevv.gumroad.com/l/hwpme" target="_blank" class="btn btn-ghost pricing-btn">Get Access &rarr;</a>
+      </div>
+
     </div>
   </div>
 </section>

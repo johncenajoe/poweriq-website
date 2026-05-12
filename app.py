@@ -4,7 +4,9 @@ import json
 import re
 import urllib.request
 import tempfile
-from flask import Flask, render_template, jsonify
+from datetime import datetime
+from flask import Flask, render_template, jsonify, Response, request, abort
+from articles import ARTICLES
 import gspread
 from google.oauth2.service_account import Credentials
 
@@ -14,9 +16,12 @@ SHEET_ID  = "1SXXwbx9x5OIY0wQrlg2KrNexhqCAoDlKJnHx6EEv1S0"
 CACHE_TTL = 60
 YT_TTL    = 600
 
-_cache      = {"data": None, "ts": 0}
-_yt_cache   = {"data": None, "ts": 0}
-_jobs_cache = {"data": None, "ts": 0}
+_cache          = {"data": None, "ts": 0}
+_yt_cache       = {"data": None, "ts": 0}
+_jobs_cache     = {"data": None, "ts": 0}
+_articles_cache = {"data": None, "ts": 0}
+
+ARTICLES_TTL = 120
 
 SCOPES = [
     "https://spreadsheets.google.com/feeds",
@@ -108,6 +113,61 @@ def get_students():
     return students
 
 
+def _text_to_html(text: str) -> str:
+    """Convert plain text (from Discord) to HTML paragraphs."""
+    blocks = re.split(r'\n{2,}', text.strip())
+    html = []
+    for block in blocks:
+        block = block.strip().replace('​', '')
+        if not block:
+            continue
+        if block.startswith('## '):
+            html.append(f'<h2>{block[3:]}</h2>')
+        elif block.startswith('> '):
+            html.append(f'<blockquote>{block[2:]}</blockquote>')
+        else:
+            html.append(f'<p>{block}</p>')
+    return '\n'.join(html)
+
+
+def get_articles():
+    now = time.time()
+    if _articles_cache["data"] is not None and now - _articles_cache["ts"] < ARTICLES_TTL:
+        return _articles_cache["data"]
+
+    sheet_articles = []
+    try:
+        gc = get_gspread_client()
+        ws = gc.open_by_key(SHEET_ID).worksheet("Articles")
+        rows = ws.get_all_values()
+        for row in rows[1:]:  # skip header
+            if len(row) < 8 or row[6] != "published":
+                continue
+            tags = [t.strip() for t in row[5].split(",") if t.strip()]
+            content_html = _text_to_html(row[7])
+            excerpt = row[7].replace('​', '').strip()[:220]
+            if len(row[7]) > 220:
+                excerpt += "…"
+            sheet_articles.append({
+                "id":       row[0],
+                "title":    row[1],
+                "author":   row[2],
+                "date":     row[3],
+                "category": row[4],
+                "tags":     tags,
+                "excerpt":  excerpt,
+                "content":  content_html,
+            })
+    except Exception:
+        pass
+
+    # Merge: manual articles.py first, then sheet articles
+    merged = list(ARTICLES) + sheet_articles
+    _articles_cache["data"] = merged
+    _articles_cache["ts"] = now
+    return merged
+
+
 def get_jobs():
     now = time.time()
     if _jobs_cache["data"] is not None and now - _jobs_cache["ts"] < CACHE_TTL:
@@ -156,7 +216,15 @@ def credits():
 
 @app.route("/library")
 def library():
-    return render_template("library.html")
+    return render_template("library.html", articles=get_articles())
+
+
+@app.route("/library/<slug>")
+def article(slug):
+    art = next((a for a in get_articles() if a["id"] == slug), None)
+    if not art:
+        abort(404)
+    return render_template("article.html", article=art)
 
 
 @app.route("/api/students")
@@ -177,6 +245,40 @@ def jobs_page():
 @app.route("/api/jobs")
 def api_jobs():
     return jsonify(get_jobs())
+
+
+@app.route("/sitemap.xml")
+def sitemap():
+    base = os.environ.get("BASE_URL", request.url_root).rstrip("/")
+    today = datetime.utcnow().strftime("%Y-%m-%d")
+    pages = [
+        ("",          "1.0",  "daily"),
+        ("/credits",  "0.8",  "hourly"),
+        ("/library",  "0.8",  "weekly"),
+        ("/jobs",     "0.7",  "hourly"),
+    ] + [(f"/library/{a['id']}", "0.9", "monthly") for a in get_articles()]
+    xml = ['<?xml version="1.0" encoding="UTF-8"?>',
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for path, priority, freq in pages:
+        xml.append(f"""  <url>
+    <loc>{base}{path}</loc>
+    <lastmod>{today}</lastmod>
+    <changefreq>{freq}</changefreq>
+    <priority>{priority}</priority>
+  </url>""")
+    xml.append("</urlset>")
+    return Response("\n".join(xml), mimetype="application/xml")
+
+
+@app.route("/robots.txt")
+def robots():
+    base = os.environ.get("BASE_URL", request.url_root).rstrip("/")
+    content = f"""User-agent: *
+Allow: /
+
+Sitemap: {base}/sitemap.xml
+"""
+    return Response(content, mimetype="text/plain")
 
 
 if __name__ == "__main__":
