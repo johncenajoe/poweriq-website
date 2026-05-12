@@ -237,6 +237,11 @@ def api_youtube():
     return jsonify(get_youtube_videos())
 
 
+@app.route("/membership")
+def membership():
+    return render_template("membership.html")
+
+
 @app.route("/jobs")
 def jobs_page():
     return render_template("jobs.html")
@@ -255,7 +260,8 @@ def sitemap():
         ("",          "1.0",  "daily"),
         ("/credits",  "0.8",  "hourly"),
         ("/library",  "0.8",  "weekly"),
-        ("/jobs",     "0.7",  "hourly"),
+        ("/jobs",       "0.7",  "hourly"),
+        ("/membership", "0.9",  "weekly"),
     ] + [(f"/library/{a['id']}", "0.9", "monthly") for a in get_articles()]
     xml = ['<?xml version="1.0" encoding="UTF-8"?>',
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
